@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -15,15 +17,15 @@ public class DummyServiceImpl implements DummyService {
     @Autowired
     DummyRepository dummyRepository;
     @Override
-    public Dummy create(DummyDto dummyDto) {
-        Dummy dummy=new Dummy();
+    public List<Dummy> create(List<DummyDto> dummyDtoList) {
+        List<Dummy> dummyList=new ArrayList<>();
         try{
-            setDummy(dummyDto, dummy);
-            dummy=dummyRepository.save(dummy);
+            setDummy(dummyDtoList, dummyList);
+            dummyList=dummyRepository.saveAll(dummyList);
         }catch (Exception e){
             log.info("");
         }
-        return dummy;
+        return dummyList;
     }
 
     @Override
@@ -39,8 +41,18 @@ public class DummyServiceImpl implements DummyService {
         }
         return dummy;    }
 
-    private static void setDummy(DummyDto dummyDto, Dummy dummy) {
-        dummy.setId(dummyDto.getId());
-        dummy.setName(dummyDto.getName());
+    @Override
+    public List<Dummy> fetchAll() {
+        List<Dummy> dummylist = new ArrayList<>();
+        try{
+            dummylist=dummyRepository.findAll();
+           
+        }catch (Exception e){
+            log.info("");
+        }
+        return dummylist;    }
+
+    public static void setDummy(List<DummyDto> dummyDtoList, List<Dummy> dummyList) {
+        dummyDtoList.forEach(dummyDto -> {dummyList.add(new Dummy(dummyDto.getId(),dummyDto.getName()));});
     }
 }
